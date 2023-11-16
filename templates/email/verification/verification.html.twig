@@ -1,0 +1,15 @@
+{% extends "email/base.html.twig" %}
+
+{% block title %}
+    <strong>{{ code }}</strong> is your verification code
+{% endblock %}
+
+{% block body %}
+    <p>Hi there,</p>
+    <p>Welcome to CoLiving! Before you can start to explore, we&#39;ll need to verify your email.</p>
+    <p>Please enter this verification code to get started:</p>
+    <p>
+        <strong class="highlight">{{ code }}</strong>
+    </p>
+    <p>Have fun using CoLiving!</p>
+{% endblock %}

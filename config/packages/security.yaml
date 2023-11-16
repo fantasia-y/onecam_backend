@@ -1,0 +1,30 @@
+security:
+    enable_authenticator_manager: true
+
+    password_hashers:
+        App\Entity\Auth\User: 'auto'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\Auth\User
+                property: email
+
+    firewalls:
+        main:
+            entry_point: jwt
+            stateless: true
+            json_login:
+                check_path: api_login_check
+                username_path: email
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            logout:
+                path: api_token_invalidate
+            jwt: ~
+            refresh_jwt:
+                check_path: api_refresh_token
+
+    access_control:
+        - { path: ^/(login|register|token/refresh|connect|connect/token|connect/callback), roles: PUBLIC_ACCESS }
+        - { path: ^/,       roles: IS_AUTHENTICATED_FULLY }
