@@ -77,20 +77,24 @@ class DoctrineEntitySubscriber implements EventSubscriber
         $class = ClassUtils::getRealClass(get_class($entity));
         $user = $this->security->getUser();
 
-        // user is null when jwt is checked, otherwise access denied
-        if ($user === null && !in_array($class, [User::class, RefreshToken::class])) {
-            throw new AccessDeniedException('Access Denied.');
-        }
-
         $voters = $this->resolver->resolve($class);
 
         foreach ($voters as $voter) {
-            $hasAccess = match ($mode) {
-                self::MODE_READ => $voter->hasReadAccess($entity, $user),
-                self::MODE_UPDATE => $voter->hasUpdateAccess($entity, $user),
-                self::MODE_CREATE => $voter->hasCreateAccess($entity, $user),
-                self::MODE_DELETE => $voter->hasDeleteAccess($entity, $user),
-            };
+            if ($user !== null) {
+                $hasAccess = match ($mode) {
+                    self::MODE_READ => $voter->hasReadAccess($entity, $user),
+                    self::MODE_UPDATE => $voter->hasUpdateAccess($entity, $user),
+                    self::MODE_CREATE => $voter->hasCreateAccess($entity, $user),
+                    self::MODE_DELETE => $voter->hasDeleteAccess($entity, $user),
+                };
+            } else {
+                $hasAccess = match ($mode) {
+                    self::MODE_READ => $voter->hasAnonReadAccess($entity),
+                    self::MODE_UPDATE => $voter->hasAnonUpdateAccess($entity),
+                    self::MODE_CREATE => $voter->hasAnonCreateAccess($entity),
+                    self::MODE_DELETE => $voter->hasAnonDeleteAccess($entity),
+                };
+            }
 
             if (!$hasAccess) {
                 throw new AccessDeniedException("Access Denied for entity $class");

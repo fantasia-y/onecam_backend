@@ -4,8 +4,11 @@ namespace App\Entity\Session;
 
 use App\Entity\Auth\User;
 use App\Repository\Session\SessionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: SessionRepository::class)]
@@ -33,6 +36,17 @@ class Session
 
     #[ORM\ManyToOne(User::class)]
     private ?User $owner = null;
+
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\JoinTable(name: 'sessions_users')]
+    #[ORM\JoinColumn(name: 'session_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    private Collection $participants;
+
+    public function __construct()
+    {
+        $this->participants = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -103,5 +117,23 @@ class Session
     {
         $this->owner = $owner;
         return $this;
+    }
+
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function setParticipants(Collection $participants): Session
+    {
+        $this->participants = $participants;
+        return $this;
+    }
+
+    public function addParticipant(UserInterface $user): void
+    {
+        if (!$this->participants->contains($user)) {
+            $this->participants->add($user);
+        }
     }
 }

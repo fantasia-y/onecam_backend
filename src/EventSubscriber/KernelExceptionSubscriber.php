@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use Doctrine\ORM\EntityNotFoundException;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +28,11 @@ class KernelExceptionSubscriber
     {
         $exception = $event->getThrowable();
 
-        $status = $exception instanceof HttpExceptionInterface ? $exception->getStatusCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
+        $status = match (get_class($exception)) {
+            HttpExceptionInterface::class => $exception->getStatusCode(),
+            EntityNotFoundException::class => Response::HTTP_NOT_FOUND,
+            default => Response::HTTP_INTERNAL_SERVER_ERROR
+        };
         $message = $exception->getMessage();
 
         $data = [

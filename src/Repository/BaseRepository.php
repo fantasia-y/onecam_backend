@@ -2,11 +2,18 @@
 
 namespace App\Repository;
 
+use App\Utils\ArrayUtils;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityNotFoundException;
 
 abstract class BaseRepository extends ServiceEntityRepository
 {
+    protected function createNotFoundException(): EntityNotFoundException
+    {
+        $class = ArrayUtils::last(explode('\\', $this->getEntityName()));
+        return new EntityNotFoundException("$class not found");
+    }
+
     /**
      * @throws EntityNotFoundException
      */
@@ -18,7 +25,7 @@ abstract class BaseRepository extends ServiceEntityRepository
                 return;
             }
         }
-        throw new EntityNotFoundException();
+        throw $this->createNotFoundException();
     }
 
     /**
@@ -32,7 +39,7 @@ abstract class BaseRepository extends ServiceEntityRepository
                 return $entity;
             }
         }
-        throw new EntityNotFoundException();
+        throw $this->createNotFoundException();
     }
 
     public function save($entity, bool $flush = true): void

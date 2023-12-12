@@ -2,7 +2,7 @@
 
 namespace App\Service\Auth;
 
-use App\Repository\UserRepository;
+use App\Repository\Auth\UserRepository;
 use League\OAuth2\Client\Provider\GoogleUser;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Symfony\Component\HttpFoundation\Response;

@@ -4,7 +4,7 @@ namespace App\Controller\Auth;
 
 use App\Controller\BaseController;
 use App\Form\Security\UserType;
-use App\Repository\UserRepository;
+use App\Repository\Auth\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

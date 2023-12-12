@@ -3,7 +3,7 @@
 namespace App\Service\Auth;
 
 use App\Entity\Auth\User;
-use App\Repository\UserRepository;
+use App\Repository\Auth\UserRepository;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;

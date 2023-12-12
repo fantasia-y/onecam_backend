@@ -2,7 +2,7 @@
 
 namespace App\Entity\Auth;
 
-use App\Repository\UserRepository;
+use App\Repository\Auth\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
@@ -15,10 +15,9 @@ use Symfony\Component\Uid\Uuid;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private ?Uuid $id = null;
+    #[ORM\Column(type: 'integer', unique: true)]
+    #[ORM\GeneratedValue]
+    private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Groups(['Private'])]
@@ -31,9 +30,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $imageUrl = null;
 
     #[ORM\Column(options: ['default' => false])]
+    #[Groups(['Private'])]
     private ?bool $emailVerified = null;
 
     #[ORM\Column(options: ['default' => false])]
+    #[Groups(['Private'])]
     private ?bool $setupDone = null;
 
     #[ORM\Column(length: 6, nullable: true)]
@@ -48,7 +49,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Exclude]
     private ?string $password = null;
 
-    public function getId(): ?Uuid
+    public function getId(): ?int
     {
         return $this->id;
     }
