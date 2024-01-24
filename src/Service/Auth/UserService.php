@@ -5,6 +5,7 @@ namespace App\Service\Auth;
 use App\Entity\Auth\User;
 use App\Repository\Auth\UserRepository;
 use Exception;
+use League\OAuth2\Client\Provider\GoogleUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -64,6 +65,22 @@ class UserService
 
         $user->setEmail($email);
         $user->setEmailVerified(true);
+
+        $this->userRepository->save($user);
+
+        return $user;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function createUserForGoogleUser(GoogleUser $googleUser): User
+    {
+        $user = $this->createNewUser(true);
+
+        $user->setEmail($googleUser->getEmail());
+        $user->setEmailVerified(true);
+        $user->setImageUrl($googleUser->getAvatar());
 
         $this->userRepository->save($user);
 

@@ -1,32 +1,32 @@
 <?php
 
-namespace App\Repository\Session;
+namespace App\Repository\Group;
 
 use App\Entity\Auth\User;
-use App\Entity\Session\Session;
+use App\Entity\Group\Group;
 use App\Repository\BaseRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\UuidV4;
 
-class SessionRepository extends BaseRepository
+class GroupRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Session::class);
+        parent::__construct($registry, Group::class);
     }
 
     /**
      * @throws EntityNotFoundException
      */
-    public function findBySessionId(string $id): ?Session
+    public function findByGroupId(string $id): ?Group
     {
         $uuid = UuidV4::fromString($id);
 
-        $qb = $this->createQueryBuilder('s')
-            ->where('s.sessionId = :session_id')
-            ->setParameter('session_id', $uuid->toBinary());
+        $qb = $this->createQueryBuilder('g')
+            ->where('g.groupId = :group_id')
+            ->setParameter('group_id', $uuid->toBinary());
 
         try {
             $result = $qb->getQuery()->getOneOrNullResult();
@@ -43,9 +43,9 @@ class SessionRepository extends BaseRepository
 
     public function getAllByUser(User $user): array
     {
-        $qb = $this->createQueryBuilder('s')
-            ->where('s.owner = :user')
-            ->orWhere(':user MEMBER OF s.participants')
+        $qb = $this->createQueryBuilder('g')
+            ->where('g.owner = :user')
+            ->orWhere(':user MEMBER OF g.participants')
             ->setParameter('user', $user);
 
         return $qb->getQuery()->getResult();

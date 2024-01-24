@@ -3,7 +3,7 @@
 namespace App\Security\Voter;
 
 use App\Entity\Auth\User;
-use App\Entity\Session\Session;
+use App\Entity\Group\Group;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class SessionVoter implements VoterInterface
@@ -11,7 +11,7 @@ class SessionVoter implements VoterInterface
     public function supports(): array
     {
         return [
-            Session::class
+            Group::class
         ];
     }
 

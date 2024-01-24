@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Entity\Session;
+namespace App\Entity\Group;
 
 use App\Entity\Auth\User;
-use App\Repository\Session\SessionRepository;
+use App\Repository\Group\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity(repositoryClass: SessionRepository::class)]
-class Session
+#[ORM\Entity(repositoryClass: GroupRepository::class)]
+#[Orm\Table('groups')]
+class Group
 {
     #[ORM\Id]
     #[ORM\Column(type: 'integer', unique: true)]
@@ -22,24 +24,17 @@ class Session
     #[ORM\Column()]
     private ?string $name = null;
 
-    #[ORM\Column()]
-    private ?\DateTime $validUntil = null;
-
-    #[ORM\Column()]
-    private ?int $maxParticipants = null;
-
-    #[ORM\Column()]
-    private ?bool $allowGuests = null;
-
     #[ORM\Column(type: 'uuid')]
-    private ?Uuid $sessionId = null;
+    private ?Uuid $groupId = null;
 
     #[ORM\ManyToOne(User::class)]
     private ?User $owner = null;
 
+    private int $imageCount = 0;
+
     #[ORM\ManyToMany(targetEntity: User::class)]
-    #[ORM\JoinTable(name: 'sessions_users')]
-    #[ORM\JoinColumn(name: 'session_id', referencedColumnName: 'id')]
+    #[ORM\JoinTable(name: 'groups_users')]
+    #[ORM\JoinColumn(name: 'group_id', referencedColumnName: 'id')]
     #[ORM\InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private Collection $participants;
 
@@ -58,53 +53,20 @@ class Session
         return $this->name;
     }
 
-    public function setName(?string $name): Session
+    public function setName(?string $name): Group
     {
         $this->name = $name;
         return $this;
     }
 
-    public function getValidUntil(): ?\DateTime
+    public function getGroupId(): ?Uuid
     {
-        return $this->validUntil;
+        return $this->groupId;
     }
 
-    public function setValidUntil(?\DateTime $validUntil): Session
+    public function setGroupId(?Uuid $groupId): Group
     {
-        $this->validUntil = $validUntil;
-        return $this;
-    }
-
-    public function getMaxParticipants(): ?int
-    {
-        return $this->maxParticipants;
-    }
-
-    public function setMaxParticipants(?int $maxParticipants): Session
-    {
-        $this->maxParticipants = $maxParticipants;
-        return $this;
-    }
-
-    public function getAllowGuests(): ?bool
-    {
-        return $this->allowGuests;
-    }
-
-    public function setAllowGuests(?bool $allowGuests): Session
-    {
-        $this->allowGuests = $allowGuests;
-        return $this;
-    }
-
-    public function getSessionId(): ?Uuid
-    {
-        return $this->sessionId;
-    }
-
-    public function setSessionId(?Uuid $sessionId): Session
-    {
-        $this->sessionId = $sessionId;
+        $this->groupId = $groupId;
         return $this;
     }
 
@@ -113,7 +75,7 @@ class Session
         return $this->owner;
     }
 
-    public function setOwner(?User $owner): Session
+    public function setOwner(?User $owner): Group
     {
         $this->owner = $owner;
         return $this;
@@ -124,7 +86,7 @@ class Session
         return $this->participants;
     }
 
-    public function setParticipants(Collection $participants): Session
+    public function setParticipants(Collection $participants): Group
     {
         $this->participants = $participants;
         return $this;
@@ -135,5 +97,23 @@ class Session
         if (!$this->participants->contains($user)) {
             $this->participants->add($user);
         }
+    }
+
+    public function removeParticipant(UserInterface $user): void
+    {
+        if ($this->participants->contains($user)) {
+            $this->participants->removeElement($user);
+        }
+    }
+
+    #[Serializer\VirtualProperty]
+    public function getImageCount(): int
+    {
+        return $this->imageCount;
+    }
+
+    public function isOwner(User $user): bool
+    {
+        return $this->getOwner()->getId() === $user->getId();
     }
 }

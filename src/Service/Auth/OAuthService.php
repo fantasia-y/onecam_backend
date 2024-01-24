@@ -42,9 +42,18 @@ class OAuthService
         return $this->authenticationSuccessHandler->handleAuthenticationSuccess($user);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function signInFromOAuthUser(GoogleUser $oAuthUser): Response
     {
-        return $this->signInFromEmail($oAuthUser->getEmail());
+        $user = $this->userRepository->findOneBy(['email' => $oAuthUser->getEmail()]);
+
+        if ($user === null) {
+            $user = $this->userService->createUserForGoogleUser($oAuthUser);
+        }
+
+        return $this->authenticationSuccessHandler->handleAuthenticationSuccess($user);
     }
 
     // TODO verify nonce
