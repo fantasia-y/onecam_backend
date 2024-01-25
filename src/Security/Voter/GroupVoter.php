@@ -4,20 +4,26 @@ namespace App\Security\Voter;
 
 use App\Entity\Auth\User;
 use App\Entity\Group\Group;
+use App\Entity\Group\GroupImage;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class SessionVoter implements VoterInterface
+class GroupVoter implements VoterInterface
 {
     public function supports(): array
     {
         return [
-            Group::class
+            Group::class,
+            GroupImage::class
         ];
     }
 
     public function hasReadAccess($subject, ?UserInterface $user): bool
     {
-        return true;
+        return match (get_class($subject)) {
+            GroupImage::class => $subject->getGroup()->isMember($user),
+            default => true,
+        };
+
     }
 
     public function hasCreateAccess($subject, ?UserInterface $user): bool

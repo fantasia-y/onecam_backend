@@ -1,0 +1,21 @@
+# Read the documentation: https://github.com/1up-lab/OneupFlysystemBundle
+oneup_flysystem:
+    adapters:
+        image_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "images"
+        image_thumbnail_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "cache/image_thumbnail"
+
+    filesystems:
+        images:
+            adapter: image_adapter
+            mount: image
+        imageThumbnail:
+            adapter: image_thumbnail_adapter
+            mount: imageThumbnail

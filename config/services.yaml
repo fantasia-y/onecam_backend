@@ -25,3 +25,13 @@ services:
     App\EventSubscriber\DoctrineEntitySubscriber:
         tags:
             - name: 'doctrine.event_subscriber'
+
+    s3_client:
+        class: Aws\S3\S3Client
+        arguments:
+            -
+                version: '%env(AWS_VERSION)%'
+                region: '%env(AWS_REGION)%'
+                credentials:
+                    key: '%env(AWS_ACCESS_KEY)%'
+                    secret: '%env(AWS_ACCESS_SECRET)%'

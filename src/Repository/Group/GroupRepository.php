@@ -8,6 +8,7 @@ use App\Repository\BaseRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\UuidV4;
 
 class GroupRepository extends BaseRepository
@@ -41,7 +42,10 @@ class GroupRepository extends BaseRepository
         }
     }
 
-    public function getAllByUser(User $user): array
+    /**
+     * @return Group[]
+     */
+    public function getAllByUser(UserInterface $user): array
     {
         $qb = $this->createQueryBuilder('g')
             ->where('g.owner = :user')

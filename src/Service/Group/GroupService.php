@@ -5,9 +5,11 @@ namespace App\Service\Group;
 use App\Entity\Auth\User;
 use App\Entity\Group\Group;
 use App\Repository\Auth\UserRepository;
+use App\Repository\Group\GroupImageRepository;
 use App\Repository\Group\GroupRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -18,12 +20,18 @@ class GroupService
     private Security $security;
     private GroupRepository $groupRepository;
     private UserRepository $userRepository;
+    private GroupImageRepository $groupImageRepository;
 
-    public function __construct(Security $security, GroupRepository $groupRepository, UserRepository $userRepository)
-    {
+    public function __construct(
+        Security $security,
+        GroupRepository $groupRepository,
+        UserRepository $userRepository,
+        GroupImageRepository $groupImageRepository
+    ) {
         $this->security = $security;
         $this->groupRepository = $groupRepository;
         $this->userRepository = $userRepository;
+        $this->groupImageRepository = $groupImageRepository;
     }
 
     public function createGroup(): Group
@@ -81,5 +89,29 @@ class GroupService
         } else {
             throw new AccessDeniedException('You need to be the owner or a member of this group');
         }
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getAllGroups(): array
+    {
+        $groups = $this->groupRepository->getAllByUser($this->security->getUser());
+
+        foreach ($groups as $group) {
+            $this->attachImageCount($group);
+        }
+
+        return $groups;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    private function attachImageCount(Group $group): void
+    {
+        $group->setImageCount($this->groupImageRepository->getGroupImageCount($group));
     }
 }

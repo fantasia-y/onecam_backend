@@ -8,6 +8,7 @@ use App\Repository\Group\GroupRepository;
 use App\Service\Group\GroupService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,12 +29,14 @@ class GroupController extends BaseController
         return $this->jsonResponse($session);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     #[Route('/group', methods: ['GET'])]
-    public function getAll(GroupRepository $groupRepository): Response
+    public function getAll(GroupService $groupService): Response
     {
-        $sessions = $groupRepository->getAllByUser($this->getUser());
-
-        return $this->jsonResponse($sessions);
+        return $this->jsonResponse($groupService->getAllGroups());
     }
 
     /**
