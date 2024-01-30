@@ -39,7 +39,7 @@ class Group
     private Collection $participants;
 
     #[Serializer\Exclude]
-    #[ORM\OneToMany(mappedBy: 'group', targetEntity: GroupImage::class)]
+    #[ORM\OneToMany(mappedBy: 'group', targetEntity: GroupImage::class, cascade: ['persist'])]
     private Collection $images;
 
     public function __construct()
@@ -120,6 +120,22 @@ class Group
     {
         $this->images = $images;
         return $this;
+    }
+
+    public function addImage(GroupImage $image): void
+    {
+        if (!$this->images->contains($image)) {
+            $image->setGroup($this);
+            $this->images->add($image);
+        }
+    }
+
+    public function removeImage(GroupImage $image): void
+    {
+        if ($this->images->contains($image)) {
+            $image->setGroup(null);
+            $this->images->removeElement($image);
+        }
     }
 
     #[Serializer\VirtualProperty]

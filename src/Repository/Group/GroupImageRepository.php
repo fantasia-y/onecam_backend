@@ -47,4 +47,22 @@ class GroupImageRepository extends BaseRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function existsInGroup(GroupImage $image, Group $group): bool
+    {
+        $qb = $this->createQueryBuilder('gi')
+            ->select('COUNT(gi)')
+            ->where('gi.group = :group')
+            ->andWhere('gi.name = :name')
+            ->setParameters([
+                'group' => $group,
+                'name' => $image->getName()
+            ]);
+
+        return $qb->getQuery()->getSingleScalarResult() === 1;
+    }
 }

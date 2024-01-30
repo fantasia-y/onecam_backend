@@ -20,14 +20,18 @@ class GroupImage
     #[ORM\Column]
     private ?string $name = null;
 
+    #[ORM\Column(type: 'json')]
+    private ?array $urls;
+
     #[Serializer\Exclude]
     #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'images')]
     #[ORM\JoinColumn(name: 'group_id', referencedColumnName: 'id')]
     private ?Group $group = null;
 
-    private ?string $url = null;
-
-    private ?string $thumbnail = null;
+    public function __construct()
+    {
+        $this->urls = [];
+    }
 
     public function getId(): ?int
     {
@@ -45,6 +49,17 @@ class GroupImage
         return $this;
     }
 
+    public function getUrls(): array
+    {
+        return $this->urls;
+    }
+
+    public function setUrls(array $urls): GroupImage
+    {
+        $this->urls = $urls;
+        return $this;
+    }
+
     public function getGroup(): ?Group
     {
         return $this->group;
@@ -53,30 +68,6 @@ class GroupImage
     public function setGroup(?Group $group): GroupImage
     {
         $this->group = $group;
-        return $this;
-    }
-
-    #[VirtualProperty]
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(?string $url): GroupImage
-    {
-        $this->url = $url;
-        return $this;
-    }
-
-    #[VirtualProperty]
-    public function getThumbnail(): ?string
-    {
-        return $this->thumbnail;
-    }
-
-    public function setThumbnail(?string $thumbnail): GroupImage
-    {
-        $this->thumbnail = $thumbnail;
         return $this;
     }
 

@@ -42,7 +42,8 @@
         "symfony/uid": "6.2.*",
         "symfony/validator": "6.2.*",
         "symfony/yaml": "6.2.*",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "ext-http": "*"
     },
     "config": {
         "allow-plugins": {

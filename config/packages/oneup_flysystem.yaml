@@ -5,7 +5,7 @@ oneup_flysystem:
             awss3v3:
                 client: s3_client
                 bucket: '%env(AWS_BUCKET_NAME)%'
-                prefix: "images"
+                prefix: "public/images"
         image_thumbnail_adapter:
             awss3v3:
                 client: s3_client
