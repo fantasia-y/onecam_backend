@@ -6,6 +6,7 @@ use App\Entity\Auth\User;
 use App\Entity\Group\Group;
 use App\Entity\Group\GroupImage;
 use App\Repository\BaseRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -40,6 +41,7 @@ class GroupImageRepository extends BaseRepository
             ->leftJoin('gi.group', 'g')
             ->where('gi.group = :group')
             ->setParameter('group', $group)
+            ->orderBy('gi.id', Criteria::DESC)
             ->setFirstResult($page * $size)
             ->setMaxResults($size);
 
