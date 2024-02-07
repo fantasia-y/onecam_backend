@@ -4,6 +4,6 @@ namespace App\Enum;
 
 enum FilterType: string
 {
-    case NONE = 'image';
-    case THUMBNAIL = 'image_thumbnail';
+    case NONE = 'original';
+    case THUMBNAIL = 'thumbnail';
 }

@@ -3,14 +3,14 @@
 namespace App\Entity\Group;
 
 
+use App\Interfaces\ImageStorage;
 use App\Repository\Group\GroupImageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Annotation\VirtualProperty;
 
 #[ORM\Entity(repositoryClass: GroupImageRepository::class)]
 #[Orm\Table('group_images')]
-class GroupImage
+class GroupImage extends ImageStorage
 {
     #[ORM\Id]
     #[ORM\Column(type: 'integer', unique: true)]
@@ -20,18 +20,10 @@ class GroupImage
     #[ORM\Column]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'json')]
-    private ?array $urls;
-
     #[Serializer\Exclude]
     #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'images')]
     #[ORM\JoinColumn(name: 'group_id', referencedColumnName: 'id')]
     private ?Group $group = null;
-
-    public function __construct()
-    {
-        $this->urls = [];
-    }
 
     public function getId(): ?int
     {
@@ -46,17 +38,6 @@ class GroupImage
     public function setName(?string $name): GroupImage
     {
         $this->name = $name;
-        return $this;
-    }
-
-    public function getUrls(): array
-    {
-        return $this->urls;
-    }
-
-    public function setUrls(array $urls): GroupImage
-    {
-        $this->urls = $urls;
         return $this;
     }
 
