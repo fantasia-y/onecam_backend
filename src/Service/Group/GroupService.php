@@ -4,12 +4,19 @@ namespace App\Service\Group;
 
 use App\Entity\Auth\User;
 use App\Entity\Group\Group;
+use App\Entity\Group\GroupImage;
+use App\Enum\FilterPrefix;
 use App\Repository\Auth\UserRepository;
+use App\Repository\Group\GroupImageRepository;
 use App\Repository\Group\GroupRepository;
+use App\Service\Image\ImageService;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use http\Exception\InvalidArgumentException;
+use League\Flysystem\FilesystemException;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Uid\Uuid;
 
@@ -18,12 +25,21 @@ class GroupService
     private Security $security;
     private GroupRepository $groupRepository;
     private UserRepository $userRepository;
+    private GroupImageRepository $groupImageRepository;
+    private ImageService $imageService;
 
-    public function __construct(Security $security, GroupRepository $groupRepository, UserRepository $userRepository)
-    {
+    public function __construct(
+        Security $security,
+        GroupRepository $groupRepository,
+        UserRepository $userRepository,
+        GroupImageRepository $groupImageRepository,
+        ImageService $imageService
+    ) {
         $this->security = $security;
         $this->groupRepository = $groupRepository;
         $this->userRepository = $userRepository;
+        $this->groupImageRepository = $groupImageRepository;
+        $this->imageService = $imageService;
     }
 
     public function createGroup(): Group
@@ -80,6 +96,99 @@ class GroupService
             $this->groupRepository->save($group);
         } else {
             throw new AccessDeniedException('You need to be the owner or a member of this group');
+        }
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getAllGroups(): array
+    {
+        $groups = $this->groupRepository->getAllByUser($this->security->getUser());
+
+        foreach ($groups as $group) {
+            $this->attachImageCount($group);
+        }
+
+        return $groups;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    private function attachImageCount(Group $group): void
+    {
+        $group->setImageCount($this->groupImageRepository->getGroupImageCount($group));
+    }
+
+
+    /**
+     * @throws ORMException
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     * @throws EntityNotFoundException
+     */
+    public function addImage(string $groupId, string $name): GroupImage
+    {
+        $this->groupRepository->beginTransaction();
+
+        try {
+            $group = $this->groupRepository->findByGroupId($groupId);
+
+            $image = new GroupImage();
+            $image->setName($name);
+
+            if ($this->groupImageRepository->existsInGroup($image, $group)) {
+                throw new InvalidArgumentException('The group already contains this image');
+            }
+
+            $group->addImage($image);
+
+            $this->groupRepository->save($group);
+
+            $path = $image->getPath();
+            $this->imageService->warmupCache($path, $image, FilterPrefix::IMAGE);
+
+            $this->groupRepository->commit();
+
+            return $image;
+        } catch (\Exception $exception) {
+            // log exception
+            $this->groupRepository->rollback();
+            throw $exception;
+        }
+    }
+
+
+    /**
+     * @throws ORMException
+     * @throws FilesystemException
+     * @throws NonUniqueResultException
+     * @throws EntityNotFoundException
+     * @throws NoResultException
+     */
+    public function deleteImage(string $groupId, string $id): void
+    {
+        $this->groupRepository->beginTransaction();
+
+        try {
+            $group = $this->groupRepository->findByGroupId($groupId);
+            /** @var GroupImage $image */
+            $image = $this->groupImageRepository->find($id);
+
+            if (!$this->groupImageRepository->existsInGroup($image, $group)) {
+                throw new InvalidArgumentException('The image is not part of this group');
+            }
+
+            $this->imageService->deleteImage($image->getPath(), $image, FilterPrefix::IMAGE);
+            $group->removeImage($image);
+
+            $this->groupRepository->commit();
+        } catch (\Exception $exception) {
+            $this->groupRepository->rollback();
+            throw $exception;
         }
     }
 }

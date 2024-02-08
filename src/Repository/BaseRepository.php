@@ -8,6 +8,21 @@ use Doctrine\ORM\EntityNotFoundException;
 
 abstract class BaseRepository extends ServiceEntityRepository
 {
+    public function beginTransaction(): void
+    {
+        $this->getEntityManager()->beginTransaction();
+    }
+
+    public function commit(): void
+    {
+        $this->getEntityManager()->commit();
+    }
+
+    public function rollback(): void
+    {
+        $this->getEntityManager()->rollback();
+    }
+
     protected function createNotFoundException(): EntityNotFoundException
     {
         $class = ArrayUtils::last(explode('\\', $this->getEntityName()));

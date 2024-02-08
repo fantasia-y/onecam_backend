@@ -5,6 +5,7 @@ namespace App\Controller\Auth;
 use App\Controller\BaseController;
 use App\Form\Security\UserType;
 use App\Repository\Auth\UserRepository;
+use App\Service\Auth\UserService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,5 +44,22 @@ class UserController extends BaseController
         }
 
         return $this->jsonResponse([]);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    #[Route('/onboarding', methods: ['PUT'])]
+    public function onboarding(Request $request, UserService $userService): Response
+    {
+        $displayname = $request->get('displayname');
+        $image = $request->get('image');
+
+        $groups = [
+            'Default',
+            'Private',
+        ];
+
+        return $this->jsonResponse($userService->finishOnboarding($displayname, $image), $groups);
     }
 }

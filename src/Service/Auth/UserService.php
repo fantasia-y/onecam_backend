@@ -3,9 +3,13 @@
 namespace App\Service\Auth;
 
 use App\Entity\Auth\User;
+use App\Enum\FilterPrefix;
+use App\Enum\FilterType;
 use App\Repository\Auth\UserRepository;
+use App\Service\Image\ImageService;
 use Exception;
 use League\OAuth2\Client\Provider\GoogleUser;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -14,15 +18,21 @@ class UserService
     private UserPasswordHasherInterface $passwordHasher;
     private UserRepository $userRepository;
     private EmailVerificationHelper $verificationHelper;
+    private Security $security;
+    private ImageService $imageService;
 
     public function __construct(
         UserPasswordHasherInterface $passwordHasher,
         UserRepository $userRepository,
-        EmailVerificationHelper $verificationHelper
+        EmailVerificationHelper $verificationHelper,
+        Security $security,
+        ImageService $imageService
     ) {
         $this->passwordHasher = $passwordHasher;
         $this->userRepository = $userRepository;
         $this->verificationHelper = $verificationHelper;
+        $this->security = $security;
+        $this->imageService = $imageService;
     }
 
     /**
@@ -80,10 +90,39 @@ class UserService
 
         $user->setEmail($googleUser->getEmail());
         $user->setEmailVerified(true);
-        $user->setImageUrl($googleUser->getAvatar());
+        $user->setUrls([
+            FilterType::NONE->value => $googleUser->getAvatar(),
+            FilterType::THUMBNAIL->value => $googleUser->getAvatar()
+        ]);
 
         $this->userRepository->save($user);
 
         return $user;
+    }
+
+    public function finishOnboarding(string $displayname, ?string $image): User
+    {
+        $this->userRepository->beginTransaction();
+
+        try {
+            /** @var User $user */
+            $user = $this->security->getUser();
+
+            $user->setDisplayname($displayname);
+            $user->setSetupDone(true);
+
+            if ($image !== null) {
+                $this->imageService->warmupCache($image, $user, FilterPrefix::USER);
+            }
+
+            $this->userRepository->save($user);
+            $this->userRepository->commit();
+
+            return $user;
+        } catch (Exception $exception) {
+            $this->userRepository->rollback();
+
+            throw $exception;
+        }
     }
 }

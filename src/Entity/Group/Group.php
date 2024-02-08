@@ -21,7 +21,7 @@ class Group
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id = null;
 
-    #[ORM\Column()]
+    #[ORM\Column]
     private ?string $name = null;
 
     #[ORM\Column(type: 'uuid')]
@@ -38,9 +38,14 @@ class Group
     #[ORM\InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private Collection $participants;
 
+    #[Serializer\Exclude]
+    #[ORM\OneToMany(mappedBy: 'group', targetEntity: GroupImage::class, cascade: ['persist'])]
+    private Collection $images;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,14 +111,52 @@ class Group
         }
     }
 
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function setImages(Collection $images): Group
+    {
+        $this->images = $images;
+        return $this;
+    }
+
+    public function addImage(GroupImage $image): void
+    {
+        if (!$this->images->contains($image)) {
+            $image->setGroup($this);
+            $this->images->add($image);
+        }
+    }
+
+    public function removeImage(GroupImage $image): void
+    {
+        if ($this->images->contains($image)) {
+            $image->setGroup(null);
+            $this->images->removeElement($image);
+        }
+    }
+
     #[Serializer\VirtualProperty]
     public function getImageCount(): int
     {
         return $this->imageCount;
     }
 
-    public function isOwner(User $user): bool
+    public function setImageCount(int $imageCount): Group
+    {
+        $this->imageCount = $imageCount;
+        return $this;
+    }
+
+    public function isOwner(UserInterface $user): bool
     {
         return $this->getOwner()->getId() === $user->getId();
+    }
+
+    public function isMember(UserInterface $user): bool
+    {
+        return $this->isOwner($user) || $this->getParticipants()->contains($user);
     }
 }
