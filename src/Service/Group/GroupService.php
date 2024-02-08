@@ -138,7 +138,7 @@ class GroupService
             $group = $this->groupRepository->findByGroupId($groupId);
 
             $image = new GroupImage();
-            $image->setName($name);
+            $image->setImageName($name);
 
             if ($this->groupImageRepository->existsInGroup($image, $group)) {
                 throw new InvalidArgumentException('The group already contains this image');

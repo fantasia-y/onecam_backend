@@ -60,7 +60,7 @@ class GroupImageRepository extends BaseRepository
             ->andWhere('gi.name = :name')
             ->setParameters([
                 'group' => $group,
-                'name' => $image->getName()
+                'name' => $image->getImageName()
             ]);
 
         return $qb->getQuery()->getSingleScalarResult() === 1;

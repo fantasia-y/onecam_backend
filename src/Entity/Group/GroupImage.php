@@ -17,9 +17,6 @@ class GroupImage extends ImageStorage
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?string $name = null;
-
     #[Serializer\Exclude]
     #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'images')]
     #[ORM\JoinColumn(name: 'group_id', referencedColumnName: 'id')]
@@ -28,17 +25,6 @@ class GroupImage extends ImageStorage
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(?string $name): GroupImage
-    {
-        $this->name = $name;
-        return $this;
     }
 
     public function getGroup(): ?Group
@@ -54,6 +40,6 @@ class GroupImage extends ImageStorage
 
     public function getPath(): string
     {
-        return sprintf('%s/%s', $this->getGroup()->getGroupId(), $this->getName());
+        return sprintf('%s/%s', $this->getGroup()->getGroupId(), $this->getImageName());
     }
 }

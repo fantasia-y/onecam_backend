@@ -43,6 +43,7 @@ class UserService
         $user = new User();
         $user->setEmailVerified($emailVerified);
         $user->setSetupDone(false);
+        $user->setUrls(["" => ""]);
         $this->verificationHelper->generateAuthCode($user);
         return $user;
     }
@@ -113,6 +114,11 @@ class UserService
 
             if ($image !== null) {
                 $this->imageService->warmupCache($image, $user, FilterPrefix::USER);
+            } else {
+                $user->setUrls([
+                    FilterType::NONE->value => 'https://ui-avatars.com/api/?name=' . $displayname .'&size=256',
+                    FilterType::THUMBNAIL->value => 'https://ui-avatars.com/api/?name=' . $displayname .'&size=256'
+                ]);
             }
 
             $this->userRepository->save($user);

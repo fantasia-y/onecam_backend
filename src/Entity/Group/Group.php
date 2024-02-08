@@ -3,6 +3,7 @@
 namespace App\Entity\Group;
 
 use App\Entity\Auth\User;
+use App\Interfaces\ImageStorage;
 use App\Repository\Group\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,7 +15,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[Orm\Table('groups')]
-class Group
+class Group extends ImageStorage
 {
     #[ORM\Id]
     #[ORM\Column(type: 'integer', unique: true)]
