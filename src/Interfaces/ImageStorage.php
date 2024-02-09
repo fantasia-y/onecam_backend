@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class ImageStorage
 {
     #[ORM\Column(nullable: true)]
-    private ?string $imageName = null;
+    protected ?string $imageName = null;
 
     #[ORM\Column(type: 'json', nullable: true)]
     protected ?array $urls = null;

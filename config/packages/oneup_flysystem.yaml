@@ -23,6 +23,17 @@ oneup_flysystem:
                 bucket: '%env(AWS_BUCKET_NAME)%'
                 prefix: "cache/user_thumbnail"
 
+        group_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "public/group"
+        group_thumbnail_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "cache/group_thumbnail"
+
     filesystems:
         images:
             adapter: image_adapter
@@ -36,3 +47,9 @@ oneup_flysystem:
         userThumbnail:
             adapter: user_thumbnail_adapter
             mount: userThumbnail
+        group:
+            adapter: group_adapter
+            mount: group
+        groupThumbnail:
+            adapter: group_thumbnail_adapter
+            mount: groupThumbnail

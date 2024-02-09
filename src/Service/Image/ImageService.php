@@ -20,6 +20,7 @@ class ImageService
     private UserRepository $repository;
     private FilesystemOperator $userFilesystem;
     private FilesystemOperator $imagesFilesystem;
+    private FilesystemOperator $groupFilesystem;
 
     public function __construct(
         CacheManager $cacheManager,
@@ -27,7 +28,8 @@ class ImageService
         DataManager $dataManager,
         UserRepository $repository,
         FilesystemOperator $userFilesystem,
-        FilesystemOperator $imagesFilesystem
+        FilesystemOperator $imagesFilesystem,
+        FilesystemOperator $groupFilesystem
     ) {
         $this->cacheManager = $cacheManager;
         $this->filterManager = $filterManager;
@@ -35,6 +37,7 @@ class ImageService
         $this->repository = $repository;
         $this->userFilesystem = $userFilesystem;
         $this->imagesFilesystem = $imagesFilesystem;
+        $this->groupFilesystem = $groupFilesystem;
     }
 
     public function warmupCache(string $image, ImageStorage $imageStorage, FilterPrefix $filterPrefix): void
@@ -93,6 +96,7 @@ class ImageService
         return match ($filterPrefix) {
             FilterPrefix::IMAGE => $this->imagesFilesystem,
             FilterPrefix::USER => $this->userFilesystem,
+            FilterPrefix::GROUP => $this->groupFilesystem,
         };
     }
 }

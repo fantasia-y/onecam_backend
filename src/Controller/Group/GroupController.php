@@ -3,9 +3,11 @@
 namespace App\Controller\Group;
 
 use App\Controller\BaseController;
+use App\Enum\FilterPrefix;
 use App\Form\Group\GroupType;
 use App\Repository\Group\GroupRepository;
 use App\Service\Group\GroupService;
+use App\Service\Image\ImageService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -51,13 +53,15 @@ class GroupController extends BaseController
     }
 
     #[Route('/group', methods: ['POST'])]
-    public function create(Request $request, GroupService $groupService, GroupRepository $groupRepository): Response
+    public function create(Request $request, GroupService $groupService, GroupRepository $groupRepository, ImageService $imageService): Response
     {
         $session = $groupService->createGroup();
         $form = $this->createForm(GroupType::class, $session);
         $form->submit($request->toArray());
 
         if ($form->isValid()) {
+            $imageService->warmupCache($session->getImageName(), $session, FilterPrefix::GROUP);
+
             $groupRepository->save($session);
 
             return $this->jsonResponse($session);

@@ -13,7 +13,8 @@ class GroupType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name');
+            ->add('name')
+            ->add('imageName');
     }
 
     public function configureOptions(OptionsResolver $resolver): void

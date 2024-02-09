@@ -10,6 +10,9 @@ liip_imagine:
         user_loader:
             flysystem:
                 filesystem_service: oneup_flysystem.user_filesystem
+        group_loader:
+            flysystem:
+                filesystem_service: oneup_flysystem.group_filesystem
 
     resolvers:
         aws_s3_resolver:
@@ -43,3 +46,9 @@ liip_imagine:
             filters:
                 thumbnail: { size: [ 256, 256 ], mode: outbound }
             data_loader: user_loader
+        group_thumbnail:
+            cache: aws_s3_resolver
+            quality: 100
+            filters:
+                thumbnail: { size: [ 256, 256 ], mode: outbound }
+            data_loader: group_loader
