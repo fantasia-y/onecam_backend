@@ -57,7 +57,7 @@ class GroupImageRepository extends BaseRepository
         $qb = $this->createQueryBuilder('gi')
             ->select('COUNT(gi)')
             ->where('gi.group = :group')
-            ->andWhere('gi.name = :name')
+            ->andWhere('gi.imageName = :name')
             ->setParameters([
                 'group' => $group,
                 'name' => $image->getImageName()
