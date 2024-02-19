@@ -81,8 +81,6 @@ class ImageService
             }
             $this->getThumbnailFilesystemByPrefix($filterPrefix)->delete($image);
         }
-
-        $this->repository->remove($imageStorage);
     }
 
     /**

@@ -77,6 +77,31 @@ class GroupController extends BaseController
     /**
      * @throws EntityNotFoundException
      */
+    #[Route('/group/{id}', methods: ['PUT'])]
+    public function update(Request $request, GroupRepository $groupRepository, GroupService $groupService): Response
+    {
+        $group = $groupRepository->findByGroupId($request->get('id'));
+        $preSubmit = clone $group;
+
+        $form = $this->createForm(GroupType::class, $group);
+        $form->submit($request->toArray());
+
+        if ($form->isValid()) {
+            $groupService->updateImage($preSubmit, $group);
+
+            $groupRepository->save($group);
+
+            return $this->jsonResponse($group);
+        }
+
+        return $this->jsonResponse([
+            'message' => 'Error',
+        ]);
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
     #[Route('/group/join', methods: ['POST'])]
     public function join(Request $request, GroupService $groupService): Response
     {

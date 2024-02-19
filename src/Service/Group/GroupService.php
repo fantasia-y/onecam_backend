@@ -136,6 +136,19 @@ class GroupService
     }
 
     /**
+     * @throws FilesystemException
+     */
+    public function updateImage(Group $preSubmit, Group $postSubmit): void
+    {
+        if ($postSubmit->getImageName() === null) {
+            $postSubmit->setImageName($preSubmit->getImageName());
+        } else {
+            $this->imageService->deleteImage($preSubmit->getImageName(), $preSubmit, FilterPrefix::GROUP);
+            $this->imageService->warmupCache($postSubmit->getImageName(), $postSubmit, FilterPrefix::GROUP);
+        }
+    }
+
+    /**
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
@@ -219,6 +232,8 @@ class GroupService
             }
 
             $this->imageService->deleteImage($image->getPath(), $image, FilterPrefix::IMAGE);
+
+            $this->groupImageRepository->remove($image);
             $group->removeImage($image);
 
             $this->groupRepository->commit();
