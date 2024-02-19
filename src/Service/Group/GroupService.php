@@ -68,9 +68,10 @@ class GroupService
         $this->groupRepository->save($group);
     }
 
+
     /**
+     * @throws FilesystemException
      * @throws EntityNotFoundException
-     * @throws AccessDeniedException
      */
     public function removeUser(string $id, string $userId): void
     {
@@ -86,9 +87,12 @@ class GroupService
             if ($group->isOwner($user) && $user->getId() === $removeUser->getId()) {
                 // if group is empty -> delete group
                 if ($group->getParticipants()->isEmpty()) {
-
+                    $this->deleteGroup($id);
+                    return;
                 } else {
-                    $group->setOwner($group->getParticipants()->first());
+                    $newOwner = $group->getParticipants()->first();
+                    $group->setOwner($newOwner);
+                    $group->removeParticipant($newOwner);
                 }
             }
 
@@ -96,6 +100,38 @@ class GroupService
             $this->groupRepository->save($group);
         } else {
             throw new AccessDeniedException('You need to be the owner or a member of this group');
+        }
+    }
+
+    /**
+     * @throws FilesystemException
+     * @throws EntityNotFoundException
+     * @throws AccessDeniedException
+     * @throws \Exception
+     */
+    public function deleteGroup(string $id): void
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $group = $this->groupRepository->findByGroupId($id);
+
+        if ($group->isOwner($user)) {
+            $this->groupRepository->beginTransaction();
+
+            try {
+                if (!$group->getImages()->isEmpty()) {
+                    $this->imageService->deleteGroupImages($group);
+                    $this->groupImageRepository->removeAll($group->getImages()->toArray());
+                }
+
+                $this->groupRepository->remove($group);
+                $this->groupRepository->commit();
+            } catch (\Exception $exception) {
+                $this->groupRepository->rollback();
+                throw $exception;
+            }
+        } else {
+            throw new AccessDeniedException('You need to be the owner of this group');
         }
     }
 

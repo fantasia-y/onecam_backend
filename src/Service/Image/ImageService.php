@@ -2,6 +2,8 @@
 
 namespace App\Service\Image;
 
+use App\Entity\Group\Group;
+use App\Entity\Group\GroupImage;
 use App\Enum\FilterPrefix;
 use App\Enum\FilterType;
 use App\Interfaces\ImageStorage;
@@ -21,6 +23,9 @@ class ImageService
     private FilesystemOperator $userFilesystem;
     private FilesystemOperator $imagesFilesystem;
     private FilesystemOperator $groupFilesystem;
+    private FilesystemOperator $userThumbnailFilesystem;
+    private FilesystemOperator $imageThumbnailFilesystem;
+    private FilesystemOperator $groupThumbnailFilesystem;
 
     public function __construct(
         CacheManager $cacheManager,
@@ -29,7 +34,10 @@ class ImageService
         UserRepository $repository,
         FilesystemOperator $userFilesystem,
         FilesystemOperator $imagesFilesystem,
-        FilesystemOperator $groupFilesystem
+        FilesystemOperator $groupFilesystem,
+        FilesystemOperator $userThumbnailFilesystem,
+        FilesystemOperator $imageThumbnailFilesystem,
+        FilesystemOperator $groupThumbnailFilesystem
     ) {
         $this->cacheManager = $cacheManager;
         $this->filterManager = $filterManager;
@@ -38,6 +46,10 @@ class ImageService
         $this->userFilesystem = $userFilesystem;
         $this->imagesFilesystem = $imagesFilesystem;
         $this->groupFilesystem = $groupFilesystem;
+
+        $this->userThumbnailFilesystem = $userThumbnailFilesystem;
+        $this->imageThumbnailFilesystem = $imageThumbnailFilesystem;
+        $this->groupThumbnailFilesystem = $groupThumbnailFilesystem;
     }
 
     public function warmupCache(string $image, ImageStorage $imageStorage, FilterPrefix $filterPrefix): void
@@ -64,13 +76,27 @@ class ImageService
     {
         foreach (FilterType::cases() as $filter) {
             if ($filter === FilterType::NONE) {
-                $this->imagesFilesystem->delete($image);
+                $this->getFilesystemByPrefix($filterPrefix)->delete($image);
                 continue;
             }
-            $this->cacheManager->remove($image, $filterPrefix->value . $filter->value);
+            $this->getThumbnailFilesystemByPrefix($filterPrefix)->delete($image);
         }
 
         $this->repository->remove($imageStorage);
+    }
+
+    /**
+     * @throws FilesystemException
+     */
+    public function deleteGroupImages(Group $group): void
+    {
+        foreach (FilterType::cases() as $filter) {
+            if ($filter === FilterType::NONE) {
+                $this->imagesFilesystem->deleteDirectory($group->getGroupId());
+                continue;
+            }
+            $this->imageThumbnailFilesystem->deleteDirectory($group->getGroupId());
+        }
     }
 
     private function resolveUrl(string $image, string $filter): string
@@ -97,6 +123,15 @@ class ImageService
             FilterPrefix::IMAGE => $this->imagesFilesystem,
             FilterPrefix::USER => $this->userFilesystem,
             FilterPrefix::GROUP => $this->groupFilesystem,
+        };
+    }
+
+    private function getThumbnailFilesystemByPrefix(FilterPrefix $filterPrefix): FilesystemOperator
+    {
+        return match ($filterPrefix) {
+            FilterPrefix::IMAGE => $this->imageThumbnailFilesystem,
+            FilterPrefix::USER => $this->userThumbnailFilesystem,
+            FilterPrefix::GROUP => $this->groupThumbnailFilesystem,
         };
     }
 }

@@ -11,6 +11,7 @@ use App\Service\Image\ImageService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use League\Flysystem\FilesystemException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -92,6 +93,18 @@ class GroupController extends BaseController
     public function removeUser(Request $request, GroupService $groupService): Response
     {
         $groupService->removeUser($request->get('id'), $request->get('user'));
+
+        return $this->jsonResponse([]);
+    }
+
+    /**
+     * @throws FilesystemException
+     * @throws EntityNotFoundException
+     */
+    #[Route('/group/{id}', methods: ['DELETE'])]
+    public function deleteGroup(Request $request, GroupService $groupService): Response
+    {
+        $groupService->deleteGroup($request->get('id'));
 
         return $this->jsonResponse([]);
     }
