@@ -16,7 +16,7 @@ class UserType extends AbstractType
                 'mapped' => false,
             ])
             ->add('displayname')
-            ->add('imageUrl');
+            ->add('imageName');
     }
 
     public function configureOptions(OptionsResolver $resolver): void

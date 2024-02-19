@@ -8,6 +8,7 @@ use App\Enum\FilterType;
 use App\Repository\Auth\UserRepository;
 use App\Service\Image\ImageService;
 use Exception;
+use League\Flysystem\FilesystemException;
 use League\OAuth2\Client\Provider\GoogleUser;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -101,6 +102,9 @@ class UserService
         return $user;
     }
 
+    /**
+     * @throws FilesystemException
+     */
     public function finishOnboarding(string $displayname, ?string $image): User
     {
         $this->userRepository->beginTransaction();
@@ -111,6 +115,10 @@ class UserService
 
             $user->setDisplayname($displayname);
             $user->setSetupDone(true);
+
+            if ($user->getImageName() !== null) {
+                $this->imageService->deleteImage($user->getImageName(), $user, FilterPrefix::USER);
+            }
 
             if ($image !== null) {
                 $this->imageService->warmupCache($image, $user, FilterPrefix::USER);
@@ -129,6 +137,19 @@ class UserService
             $this->userRepository->rollback();
 
             throw $exception;
+        }
+    }
+
+    /**
+     * @throws FilesystemException
+     */
+    public function updateImage(User $preSubmit, User $postSubmit): void
+    {
+        if ($postSubmit->getImageName() !== $preSubmit->getImageName()) {
+            if ($preSubmit->getImageName() !== null) {
+                $this->imageService->deleteImage($preSubmit->getImageName(), $preSubmit, FilterPrefix::USER);
+            }
+            $this->imageService->warmupCache($postSubmit->getImageName(), $postSubmit, FilterPrefix::USER);
         }
     }
 }

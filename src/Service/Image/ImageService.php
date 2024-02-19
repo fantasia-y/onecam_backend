@@ -63,6 +63,7 @@ class ImageService
             $urls[$filter->value] = $this->resolveUrl($image, $filterPrefix->value . $filter->value);
         }
 
+        $imageStorage->setImageName($image);
         $imageStorage->setUrls($urls);
 
         $this->repository->save($imageStorage);
@@ -81,6 +82,8 @@ class ImageService
             }
             $this->getThumbnailFilesystemByPrefix($filterPrefix)->delete($image);
         }
+
+        $imageStorage->setImageName(null);
     }
 
     /**

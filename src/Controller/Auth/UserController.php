@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Form\Security\UserType;
 use App\Repository\Auth\UserRepository;
 use App\Service\Auth\UserService;
+use League\Flysystem\FilesystemException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,15 +25,20 @@ class UserController extends BaseController
         return $this->jsonResponse($this->getUser(), $groups);
     }
 
+    /**
+     * @throws FilesystemException
+     */
     #[Route(methods: 'PUT')]
-    public function update(Request $request, UserRepository $userRepository): Response
+    public function update(Request $request, UserRepository $userRepository, UserService $userService): Response
     {
         $user = $this->getUser();
+        $preSubmit = clone $user;
 
         $form = $this->createForm(UserType::class, $user);
         $form->submit($request->toArray(), false);
         if ($form->isValid()) {
-            $user->setSetupDone(true);
+            $userService->updateImage($preSubmit, $user);
+
             $userRepository->save($user);
 
             $groups = [

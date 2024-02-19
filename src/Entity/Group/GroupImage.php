@@ -3,6 +3,7 @@
 namespace App\Entity\Group;
 
 
+use App\Entity\Auth\User;
 use App\Interfaces\ImageStorage;
 use App\Repository\Group\GroupImageRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,6 +23,9 @@ class GroupImage extends ImageStorage
     #[ORM\JoinColumn(name: 'group_id', referencedColumnName: 'id')]
     private ?Group $group = null;
 
+    #[ORM\ManyToOne(User::class)]
+    private ?User $createdBy = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -35,6 +39,17 @@ class GroupImage extends ImageStorage
     public function setGroup(?Group $group): GroupImage
     {
         $this->group = $group;
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): GroupImage
+    {
+        $this->createdBy = $createdBy;
         return $this;
     }
 

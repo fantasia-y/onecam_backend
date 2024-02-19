@@ -184,10 +184,13 @@ class GroupService
         $this->groupRepository->beginTransaction();
 
         try {
+            /** @var User $user */
+            $user = $this->security->getUser();
             $group = $this->groupRepository->findByGroupId($groupId);
 
             $image = new GroupImage();
             $image->setImageName($name);
+            $image->setCreatedBy($user);
 
             if ($this->groupImageRepository->existsInGroup($image, $group)) {
                 throw new InvalidArgumentException('The group already contains this image');
@@ -231,7 +234,7 @@ class GroupService
                 throw new InvalidArgumentException('The image is not part of this group');
             }
 
-            $this->imageService->deleteImage($image->getPath(), $image, FilterPrefix::IMAGE);
+            $this->imageService->deleteImage($image->getImageName(), $image, FilterPrefix::IMAGE);
 
             $this->groupImageRepository->remove($image);
             $group->removeImage($image);
