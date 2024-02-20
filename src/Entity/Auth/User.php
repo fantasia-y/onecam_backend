@@ -45,6 +45,10 @@ class User extends ImageStorage implements UserInterface, PasswordAuthenticatedU
     #[Exclude]
     private ?string $password = null;
 
+    #[ORM\OneToOne(targetEntity: NotificationSettings::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'notification_settings_id', referencedColumnName: 'id')]
+    private ?NotificationSettings $notificationSettings = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -143,6 +147,17 @@ class User extends ImageStorage implements UserInterface, PasswordAuthenticatedU
     {
         $this->password = $password;
 
+        return $this;
+    }
+
+    public function getNotificationSettings(): ?NotificationSettings
+    {
+        return $this->notificationSettings;
+    }
+
+    public function setNotificationSettings(?NotificationSettings $notificationSettings): User
+    {
+        $this->notificationSettings = $notificationSettings;
         return $this;
     }
 

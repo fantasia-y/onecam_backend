@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Auth\NotificationSettings;
 use App\Entity\Auth\RefreshToken;
 use App\Entity\Auth\User;
 use Doctrine\Common\Util\ClassUtils;
@@ -15,6 +16,7 @@ class AuthVoter implements VoterInterface
         return [
             User::class,
             RefreshToken::class,
+            NotificationSettings::class
         ];
     }
 

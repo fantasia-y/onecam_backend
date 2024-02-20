@@ -2,6 +2,7 @@
 
 namespace App\Service\Auth;
 
+use App\Entity\Auth\NotificationSettings;
 use App\Entity\Auth\User;
 use App\Enum\FilterPrefix;
 use App\Enum\FilterType;
@@ -46,6 +47,7 @@ class UserService
         $user->setSetupDone(false);
         $user->setUrls(["" => ""]);
         $this->verificationHelper->generateAuthCode($user);
+        $user->setNotificationSettings(new NotificationSettings());
         return $user;
     }
 
