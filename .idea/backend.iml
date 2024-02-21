@@ -121,6 +121,14 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/liip/imagine-bundle" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/mtdowling/jmespath.php" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/oneup/flysystem-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/.ddev/.dbimageBuild" />
+      <excludeFolder url="file://$MODULE_DIR$/.ddev/.global_commands" />
+      <excludeFolder url="file://$MODULE_DIR$/.ddev/.homeadditions" />
+      <excludeFolder url="file://$MODULE_DIR$/.ddev/.webimageBuild" />
+      <excludeFolder url="file://$MODULE_DIR$/.ddev/db_snapshots" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/pusher/pusher-push-notifications" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

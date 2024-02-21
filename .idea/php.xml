@@ -128,6 +128,7 @@
       <path value="$PROJECT_DIR$/vendor/aws/aws-crt-php" />
       <path value="$PROJECT_DIR$/vendor/aws/aws-sdk-php" />
       <path value="$PROJECT_DIR$/vendor/league/flysystem-aws-s3-v3" />
+      <path value="$PROJECT_DIR$/vendor/pusher/pusher-push-notifications" />
     </include_path>
   </component>
   <component name="PhpInterpreters">
