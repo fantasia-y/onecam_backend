@@ -5,6 +5,7 @@ namespace App\Controller\Auth;
 use App\Controller\BaseController;
 use App\Form\Security\UserType;
 use App\Repository\Auth\UserRepository;
+use App\Service\Auth\NotificationSettingsService;
 use App\Service\Auth\UserService;
 use League\Flysystem\FilesystemException;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,5 +68,13 @@ class UserController extends BaseController
         ];
 
         return $this->jsonResponse($userService->finishOnboarding($displayname, $image), $groups);
+    }
+
+    #[Route('/notifications', methods: ['POST'])]
+    public function updateNotificationSettings(Request $request, NotificationSettingsService $notificationSettingsService): Response
+    {
+        $notificationSettingsService->updateNotificationSettings($request->toArray());
+
+        return $this->jsonResponse([]);
     }
 }

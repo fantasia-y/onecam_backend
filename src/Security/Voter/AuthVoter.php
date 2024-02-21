@@ -37,6 +37,7 @@ class AuthVoter implements VoterInterface
         return match ($class) {
             User::class => $subject->getId() === $user->getId(),
             RefreshToken::class => true,
+            NotificationSettings::class => true,
         };
     }
 
