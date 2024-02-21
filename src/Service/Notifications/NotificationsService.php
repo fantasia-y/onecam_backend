@@ -56,7 +56,8 @@ class NotificationsService
                     'title' => 'OneCam',
                     'body' => $message
                 ],
-                'content-available' => 1
+                'content-available' => 1,
+                'mutable-content' => 1
             ]
         ]];
 
