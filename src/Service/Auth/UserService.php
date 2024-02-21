@@ -14,6 +14,7 @@ use League\OAuth2\Client\Provider\GoogleUser;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Uid\Uuid;
 
 class UserService
 {
@@ -43,6 +44,7 @@ class UserService
     private function createNewUser(bool $emailVerified = false): User
     {
         $user = new User();
+        $user->setUuid(Uuid::v4());
         $user->setEmailVerified($emailVerified);
         $user->setSetupDone(false);
         $user->setUrls(["" => ""]);

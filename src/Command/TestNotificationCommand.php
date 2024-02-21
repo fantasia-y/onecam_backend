@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Service\Notifications\NotificationsService;
 use App\Service\OneSignalService;
 use onesignal\client\ApiException;
 use Symfony\Component\Console\Command\Command;
@@ -10,12 +11,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class TestNotificationCommand extends Command
 {
-    private OneSignalService $oneSignalService;
+    private NotificationsService $notifications;
 
-    public function __construct(OneSignalService $oneSignalService)
+    public function __construct(NotificationsService $notifications)
     {
         parent::__construct();
-        $this->oneSignalService = $oneSignalService;
+        $this->notifications = $notifications;
     }
 
     protected function configure(): void
@@ -28,10 +29,7 @@ class TestNotificationCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->oneSignalService->sendNotification('Test Notification', 'This is a test', [
-            '1EDDAD96-3044-6960-BD64-411746E51C4E',
-            '1EDDA3DF-B015-688A-B170-D5AC88E93BF5'
-        ]);
+        $this->notifications->sendNotification(['63333534-6162-3066-2d31-3131302d3462'], 'Hello, world!', 'Testq');
 
         return Command::SUCCESS;
     }

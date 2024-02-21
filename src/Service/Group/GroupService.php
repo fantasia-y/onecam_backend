@@ -10,6 +10,7 @@ use App\Repository\Auth\UserRepository;
 use App\Repository\Group\GroupImageRepository;
 use App\Repository\Group\GroupRepository;
 use App\Service\Image\ImageService;
+use App\Service\Notifications\NotificationsService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -27,19 +28,22 @@ class GroupService
     private UserRepository $userRepository;
     private GroupImageRepository $groupImageRepository;
     private ImageService $imageService;
+    private NotificationsService $notificationsService;
 
     public function __construct(
         Security $security,
         GroupRepository $groupRepository,
         UserRepository $userRepository,
         GroupImageRepository $groupImageRepository,
-        ImageService $imageService
+        ImageService $imageService,
+        NotificationsService $notificationsService
     ) {
         $this->security = $security;
         $this->groupRepository = $groupRepository;
         $this->userRepository = $userRepository;
         $this->groupImageRepository = $groupImageRepository;
         $this->imageService = $imageService;
+        $this->notificationsService = $notificationsService;
     }
 
     public function createGroup(): Group
@@ -58,14 +62,19 @@ class GroupService
 
     /**
      * @throws EntityNotFoundException
+     * @throws \Exception
      */
     public function joinGroup(string $id): void
     {
         $group = $this->groupRepository->findByGroupId($id);
 
-        $group->addParticipant($this->security->getUser());
+        /** @var User $user */
+        $user = $this->security->getUser();
+        $group->addParticipant($user);
 
         $this->groupRepository->save($group);
+
+        $this->notificationsService->sendNewMemberNotification($group, $user);
     }
 
 
@@ -202,6 +211,8 @@ class GroupService
 
             $path = $image->getPath();
             $this->imageService->warmupCache($path, $image, FilterPrefix::IMAGE);
+
+            $this->notificationsService->sendNewImageNotification($group, $user);
 
             $this->groupRepository->commit();
 

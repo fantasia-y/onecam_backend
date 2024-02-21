@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User extends ImageStorage implements UserInterface, PasswordAuthenticatedUserInterface
@@ -17,6 +18,9 @@ class User extends ImageStorage implements UserInterface, PasswordAuthenticatedU
     #[ORM\Column(type: 'integer', unique: true)]
     #[ORM\GeneratedValue]
     private ?int $id = null;
+
+    #[ORM\Column(type: 'uuid')]
+    private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Groups(['Private'])]
@@ -52,6 +56,17 @@ class User extends ImageStorage implements UserInterface, PasswordAuthenticatedU
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(?Uuid $uuid): User
+    {
+        $this->uuid = $uuid;
+        return $this;
     }
 
     public function getEmail(): ?string

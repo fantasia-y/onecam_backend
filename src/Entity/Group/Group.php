@@ -160,4 +160,9 @@ class Group extends ImageStorage
     {
         return $this->isOwner($user) || $this->getParticipants()->contains($user);
     }
+
+    public function getRecipients(): array
+    {
+        return [$this->getOwner(), ...$this->getParticipants()->toArray()];
+    }
 }

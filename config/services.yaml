@@ -26,6 +26,12 @@ services:
         tags:
             - name: 'doctrine.event_subscriber'
 
+    Pusher\PushNotifications\PushNotifications:
+        arguments:
+            -
+                instanceId: '%env(PUSHER_INSTANCE_ID)%'
+                secretKey: '%env(PUSHER_SECRET_KEY)%'
+
     s3_client:
         class: Aws\S3\S3Client
         arguments:
