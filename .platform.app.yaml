@@ -42,10 +42,10 @@ hooks:
         curl -fs https://get.symfony.com/cloud/configurator | bash
         
         NODE_VERSION=18 symfony-build
+        
+        php bin/console lexik:jwt:generate-keypair --skip-if-exists
 
     deploy: |
         set -x -e
-
-        php bin/console lexik:jwt:generate-keypair
 
         symfony-deploy
