@@ -14,7 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
-#[Orm\Table('groups')]
+#[Orm\Table('group_sessions')]
 class Group extends ImageStorage
 {
     #[ORM\Id]
