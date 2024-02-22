@@ -41,7 +41,7 @@ hooks:
 
         curl -fs https://get.symfony.com/cloud/configurator | bash
         
-        bash export-config.sh
+        bash /app/export-config.sh
         
         NODE_VERSION=18 symfony-build
         
