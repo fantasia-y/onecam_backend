@@ -41,11 +41,11 @@ class UserService
     /**
      * @throws Exception
      */
-    private function createNewUser(bool $emailVerified = false): User
+    private function createNewUser(): User
     {
         $user = new User();
         $user->setUuid(Uuid::v4());
-        $user->setEmailVerified($emailVerified);
+        $user->setEmailVerified(true);
         $user->setSetupDone(false);
         $user->setUrls(["" => ""]);
         $this->verificationHelper->generateAuthCode($user);
@@ -77,7 +77,7 @@ class UserService
      */
     public function createUserForEmail(string $email): User
     {
-        $user = $this->createNewUser(true);
+        $user = $this->createNewUser();
 
         $user->setEmail($email);
         $user->setEmailVerified(true);
@@ -92,7 +92,7 @@ class UserService
      */
     public function createUserForGoogleUser(GoogleUser $googleUser): User
     {
-        $user = $this->createNewUser(true);
+        $user = $this->createNewUser();
 
         $user->setEmail($googleUser->getEmail());
         $user->setEmailVerified(true);
