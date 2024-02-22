@@ -41,6 +41,8 @@ hooks:
 
         curl -fs https://get.symfony.com/cloud/configurator | bash
         
+        bash export-config.sh
+        
         NODE_VERSION=18 symfony-build
         
         php bin/console lexik:jwt:generate-keypair --skip-if-exists
