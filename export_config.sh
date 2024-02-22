@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Ensure the file is empty.
-cat '' > .env.prod
+> .env.prod
 
 # Map the database information from the PLATFORM_RELATIONSHIPS variable into the YAML file.
 # Use this process to use whatever variable names your app needs.
