@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Ensure the file is empty.
+touch .env.prod
 cat '' > .env.prod
 
 # Map the database information from the PLATFORM_RELATIONSHIPS variable into the YAML file.
