@@ -59,13 +59,13 @@ class GroupImageController extends BaseController
      * @throws EntityNotFoundException
      * @throws NoResultException
      */
-    #[Route('/group/{id}/images/{image}', methods: ['DELETE'])]
+    #[Route('/group/{id}/images', methods: ['DELETE'])]
     public function deleteImage(Request $request, GroupService $groupService): Response
     {
         $groupId = $request->get('id');
-        $imageId = $request->get('image');
+        $imageIds = $request->get('images');
 
-        $groupService->deleteImage($groupId, $imageId);
+        $groupService->deleteImage($groupId, $imageIds);
 
         return $this->jsonResponse([]);
     }

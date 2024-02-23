@@ -232,23 +232,26 @@ class GroupService
      * @throws EntityNotFoundException
      * @throws NoResultException
      */
-    public function deleteImage(string $groupId, string $id): void
+    public function deleteImage(string $groupId, array $ids): void
     {
         $this->groupRepository->beginTransaction();
 
         try {
             $group = $this->groupRepository->findByGroupId($groupId);
-            /** @var GroupImage $image */
-            $image = $this->groupImageRepository->find($id);
 
-            if (!$this->groupImageRepository->existsInGroup($image, $group)) {
-                throw new InvalidArgumentException('The image is not part of this group');
+            foreach ($ids as $id) {
+                /** @var GroupImage $image */
+                $image = $this->groupImageRepository->find($id);
+
+                if (!$this->groupImageRepository->existsInGroup($image, $group)) {
+                    throw new InvalidArgumentException('The image is not part of this group');
+                }
+
+                $this->imageService->deleteImage($image->getImageName(), $image, FilterPrefix::IMAGE);
+
+                $this->groupImageRepository->remove($image);
+                $group->removeImage($image);
             }
-
-            $this->imageService->deleteImage($image->getImageName(), $image, FilterPrefix::IMAGE);
-
-            $this->groupImageRepository->remove($image);
-            $group->removeImage($image);
 
             $this->groupRepository->commit();
         } catch (\Exception $exception) {
