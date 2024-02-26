@@ -36,10 +36,6 @@ web:
 
 mounts:
     "/var": { source: local, source_path: var }
-    "/keys":
-        source: service
-        service: key-storage
-        source_path: keys
     
 
 hooks:
