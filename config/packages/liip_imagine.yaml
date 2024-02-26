@@ -36,19 +36,19 @@ liip_imagine:
         cache: ~
         image_thumbnail:
             cache: aws_s3_resolver
-            quality: 90
+            quality: 100
             filters:
                 thumbnail: { size: [ 250, 250 ], mode: outbound }
             data_loader: image_loader
         user_thumbnail:
             cache: aws_s3_resolver
-            quality: 90
+            quality: 100
             filters:
                 thumbnail: { size: [ 150, 150 ], mode: outbound }
             data_loader: user_loader
         group_thumbnail:
             cache: aws_s3_resolver
-            quality: 90
+            quality: 100
             filters:
                 thumbnail: { size: [ 360, 180 ], mode: outbound }
             data_loader: group_loader
