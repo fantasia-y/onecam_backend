@@ -5,6 +5,7 @@ namespace App\Controller\Group;
 use App\Controller\BaseController;
 use App\Enum\FilterPrefix;
 use App\Form\Group\GroupType;
+use App\Repository\Group\GroupImageRepository;
 use App\Repository\Group\GroupRepository;
 use App\Service\Group\GroupService;
 use App\Service\Image\ImageService;
@@ -21,15 +22,17 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class GroupController extends BaseController
 {
     /**
+     * @throws NonUniqueResultException
      * @throws EntityNotFoundException
+     * @throws NoResultException
      */
     #[Route('/join/{id}', name: 'session_by_id', requirements: ['id' => Requirement::UUID], methods: ['GET'])]
-    public function share(Request $request, GroupRepository $groupRepository): Response
+    public function share(Request $request, GroupRepository $groupRepository, GroupImageRepository $groupImageRepository): Response
     {
-        // TODO show website
-        $session = $groupRepository->findByGroupId($request->get('id'));
+        $group = $groupRepository->findByGroupId($request->get('id'));
+        $group->setImageCount($groupImageRepository->getGroupImageCount($group));
 
-        return $this->jsonResponse($session);
+        return $this->render('group/join.html.twig', ['group' => $group]);
     }
 
     /**
