@@ -11,6 +11,8 @@ runtime:
         - ctype
         - curl
         
+relationships:
+    database: "db:mysql"
 
 #variables:
 #    php:
