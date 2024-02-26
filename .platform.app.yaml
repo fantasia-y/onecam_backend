@@ -36,10 +36,10 @@ web:
 
 mounts:
     "/var": { source: local, source_path: var }
-    "/config":
+    "/keys":
         source: service
         service: key-storage
-        source_path: config
+        source_path: keys
     
 
 hooks:
