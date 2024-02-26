@@ -10,7 +10,7 @@ runtime:
         - iconv
         - ctype
         - curl
-        - pgsql
+        - pdo_pgsql
         
 relationships:
     database: "db:postgresql"
