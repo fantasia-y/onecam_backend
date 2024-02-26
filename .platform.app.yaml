@@ -12,7 +12,7 @@ runtime:
         - curl
         
 relationships:
-    database: "db:mysql"
+    database: "db:postgresql"
 
 #variables:
 #    php:
