@@ -43,7 +43,7 @@ class KernelExceptionSubscriber
 
         $data = [
             'code' => $status,
-            'message' => $this->environment === 'dev' ? $message : $message,
+            'message' => $this->environment === 'dev' ? $message : '',
         ];
 
         $headers = ['Content-Type' => 'application/json'];
