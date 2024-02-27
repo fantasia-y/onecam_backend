@@ -25,7 +25,6 @@ class OAuthController extends BaseController
     #[Route('/connect')]
     public function connect(Request $request, ClientRegistry $clientRegistry): Response
     {
-        // TODO check if supported
         $provider = $request->get(self::PROVIDER_TOKEN);
 
         // store redirect url and type

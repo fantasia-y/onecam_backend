@@ -71,9 +71,8 @@ class GroupController extends BaseController
             return $this->jsonResponse($session);
         }
 
-        // response error
         return $this->jsonResponse([
-            'message' => 'Error',
+            'message' => 'Invalid input',
         ]);
     }
 

@@ -21,30 +21,41 @@ class GroupVoter implements VoterInterface
     {
         return match (get_class($subject)) {
             GroupImage::class => $subject->getGroup()->isMember($user),
-            default => true,
+            Group::class => $subject->isOwner($user),
         };
 
     }
 
     public function hasCreateAccess($subject, ?UserInterface $user): bool
     {
-        return true;
+        return match (get_class($subject)) {
+            GroupImage::class => $subject->getGroup()->isMember($user),
+            Group::class => true,
+        };
     }
 
     public function hasUpdateAccess($subject, ?UserInterface $user): bool
     {
-        // TODO differentiate between update and inserting into collection
-        return true;
+        return match (get_class($subject)) {
+            GroupImage::class => $subject->getGroup()->isMember($user),
+            Group::class => $subject->isMember($user),
+        };
     }
 
     public function hasDeleteAccess($subject, ?UserInterface $user): bool
     {
-        return $this->hasCreateAccess($subject, $user);
+        return match (get_class($subject)) {
+            GroupImage::class => $subject->getGroup()->isMember($user),
+            Group::class => $subject->isOwner($user),
+        };
     }
 
     public function hasAnonReadAccess($subject): bool
     {
-        return true;
+        return match (get_class($subject)) {
+            GroupImage::class => false,
+            Group::class => true,
+        };
     }
 
     public function hasAnonCreateAccess($subject): bool
