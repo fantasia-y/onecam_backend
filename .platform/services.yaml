@@ -1,3 +1,7 @@
 db:
   type: postgresql:16
   disk: 256
+
+key-storage:
+  type: network-storage:2.0
+  disk: 256
