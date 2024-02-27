@@ -1,0 +1,83 @@
+<html lang="en">
+    <head>
+        <title>GroupCam</title>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mailtoharshit/San-Francisco-Font-/sanfrancisco.css">
+        <link rel="icon" href="{{ group.urls['thumbnail'] }}">
+    </head>
+
+    <style>
+        * {
+            font-family: "San Francisco", serif;
+            font-weight: 400;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            row-gap: 20px;
+            height: 100%;
+            width: 100%;
+            margin-top: 100px;
+        }
+
+        .preview {
+            background-image: url("{{ group.urls['original'] }}");
+            background-position: center;
+            width: 90%;
+            height: 60%;
+            display: flex;
+            align-items: flex-end;
+            border-radius: 10px;
+        }
+
+        .container {
+            width: 100%;
+            height: 100px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background-color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .name {
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .count {
+            font-size: 1.5em;
+        }
+
+        .button {
+            color: white;
+            background-color: #197FE6;
+            padding: 25px;
+            font-weight: 700;
+            font-size: 2.5em;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+
+    <body>
+        <div class="wrapper">
+            <div class="preview">
+                <div class="container">
+                    <span class="name">{{ group.name }}</span>
+                    <span class="count">{{ group.imageCount }} image(s)</span>
+                </div>
+            </div>
+
+            <a href="groupcam://join?id={{ group.groupId }}" class="button">Open in GroupCam</a>
+        </div>
+    </body>
+</html>

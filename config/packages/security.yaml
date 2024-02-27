@@ -27,4 +27,6 @@ security:
 
     access_control:
         - { path: ^/(login|register|token/refresh|connect|connect/token|connect/callback), roles: PUBLIC_ACCESS }
+        - { route: 'session_by_id', roles: PUBLIC_ACCESS }
+        - { route: 'get_group_image', roles: PUBLIC_ACCESS }
         - { path: ^/,       roles: IS_AUTHENTICATED_FULLY }

@@ -1,0 +1,13 @@
+{
+    "applinks": {
+        "details": [
+            {
+                "appIDs": ["B2RFHB4JYK.dev.gordonkirsch.OneCam"],
+                "components": [
+                    "/": "/join/*",
+                    "comment": "Matches any URL with a path that starts with /join/."
+                ]
+            }
+        ]
+    }
+}

@@ -50,7 +50,6 @@ class JWTHelper
             return json_decode($response->getContent(), true);
         }
 
-        // TODO handle errors correctly
         return [];
     }
 }

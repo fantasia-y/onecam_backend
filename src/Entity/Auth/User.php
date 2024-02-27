@@ -2,23 +2,26 @@
 
 namespace App\Entity\Auth;
 
-use App\Repository\UserRepository;
+use App\Interfaces\ImageStorage;
+use App\Repository\Auth\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
-use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\Table('users')]
+class User extends ImageStorage implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private ?Uuid $id = null;
+    #[ORM\Column(type: 'integer', unique: true)]
+    #[ORM\GeneratedValue]
+    private ?int $id = null;
+
+    #[ORM\Column(type: 'uuid')]
+    private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Groups(['Private'])]
@@ -27,13 +30,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $displayname = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?string $imageUrl = null;
-
     #[ORM\Column(options: ['default' => false])]
+    #[Groups(['Private'])]
     private ?bool $emailVerified = null;
 
     #[ORM\Column(options: ['default' => false])]
+    #[Groups(['Private'])]
     private ?bool $setupDone = null;
 
     #[ORM\Column(length: 6, nullable: true)]
@@ -48,9 +50,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Exclude]
     private ?string $password = null;
 
-    public function getId(): ?Uuid
+    #[ORM\OneToOne(targetEntity: NotificationSettings::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'notification_settings_id', referencedColumnName: 'id')]
+    #[Groups(['Private'])]
+    private ?NotificationSettings $notificationSettings = null;
+
+    public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(?Uuid $uuid): User
+    {
+        $this->uuid = $uuid;
+        return $this;
     }
 
     public function getEmail(): ?string
@@ -73,16 +91,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDisplayname(?string $displayname): void
     {
         $this->displayname = $displayname;
-    }
-
-    public function getImageUrl(): ?string
-    {
-        return $this->imageUrl;
-    }
-
-    public function setImageUrl(?string $imageUrl): void
-    {
-        $this->imageUrl = $imageUrl;
     }
 
     public function getEmailVerified(): ?bool
@@ -159,12 +167,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getNotificationSettings(): ?NotificationSettings
+    {
+        return $this->notificationSettings;
+    }
+
+    public function setNotificationSettings(?NotificationSettings $notificationSettings): User
+    {
+        $this->notificationSettings = $notificationSettings;
+        return $this;
+    }
+
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
+    public function eraseCredentials() {}
 }

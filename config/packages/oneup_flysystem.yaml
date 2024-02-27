@@ -1,0 +1,55 @@
+# Read the documentation: https://github.com/1up-lab/OneupFlysystemBundle
+oneup_flysystem:
+    adapters:
+        image_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "public/images"
+        image_thumbnail_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "cache/image_thumbnail"
+
+        user_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "public/user"
+        user_thumbnail_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "cache/user_thumbnail"
+
+        group_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "public/group"
+        group_thumbnail_adapter:
+            awss3v3:
+                client: s3_client
+                bucket: '%env(AWS_BUCKET_NAME)%'
+                prefix: "cache/group_thumbnail"
+
+    filesystems:
+        images:
+            adapter: image_adapter
+            mount: image
+        imageThumbnail:
+            adapter: image_thumbnail_adapter
+            mount: imageThumbnail
+        user:
+            adapter: user_adapter
+            mount: user
+        userThumbnail:
+            adapter: user_thumbnail_adapter
+            mount: userThumbnail
+        group:
+            adapter: group_adapter
+            mount: group
+        groupThumbnail:
+            adapter: group_thumbnail_adapter
+            mount: groupThumbnail

@@ -18,16 +18,13 @@ abstract class BaseController extends AbstractController
     ];
 
     protected SerializerInterface $serializer;
-    protected OneSignalService $oneSignalService;
     private RequestStack $requestStack;
 
     public function __construct(
         SerializerInterface $serializer,
-        OneSignalService $oneSignalService,
         RequestStack $requestStack
     ) {
         $this->serializer = $serializer;
-        $this->oneSignalService = $oneSignalService;
         $this->requestStack = $requestStack;
     }
 

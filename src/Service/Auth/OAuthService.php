@@ -2,7 +2,7 @@
 
 namespace App\Service\Auth;
 
-use App\Repository\UserRepository;
+use App\Repository\Auth\UserRepository;
 use League\OAuth2\Client\Provider\GoogleUser;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,9 +42,18 @@ class OAuthService
         return $this->authenticationSuccessHandler->handleAuthenticationSuccess($user);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function signInFromOAuthUser(GoogleUser $oAuthUser): Response
     {
-        return $this->signInFromEmail($oAuthUser->getEmail());
+        $user = $this->userRepository->findOneBy(['email' => $oAuthUser->getEmail()]);
+
+        if ($user === null) {
+            $user = $this->userService->createUserForGoogleUser($oAuthUser);
+        }
+
+        return $this->authenticationSuccessHandler->handleAuthenticationSuccess($user);
     }
 
     // TODO verify nonce
