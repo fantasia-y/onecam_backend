@@ -49,8 +49,6 @@ hooks:
         curl -fs https://get.symfony.com/cloud/configurator | bash
         
         NODE_VERSION=18 symfony-build
-        
-        php bin/console doctrine:schema:drop --force
 
     deploy: |
         set -x -e
