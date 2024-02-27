@@ -27,7 +27,7 @@ class GroupRepository extends BaseRepository
 
         $qb = $this->createQueryBuilder('g')
             ->where('g.groupId = :group_id')
-            ->setParameter('group_id', $uuid->toBinary());
+            ->setParameter('group_id', $uuid);
 
         try {
             $result = $qb->getQuery()->getOneOrNullResult();
